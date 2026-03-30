@@ -9,7 +9,10 @@
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux"
   },
-  "author": "FrairOfSunAndRain",
+  "author": {
+    "name": "FrairOfSunAndRain",
+    "email": "FrairOfSunAndRain@users.noreply.github.com"
+  },
   "license": "AGPL-3.0",
   "private": true,
   "build": {
