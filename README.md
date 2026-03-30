@@ -1,6 +1,6 @@
 # Running Sheet Transcriber
 
-An offline desktop application for creating match incident running sheets from audio recordings. Built for football match officials to transcribe, review, and publish incident reports with precision.
+An offline desktop application for creating match incident running sheets from audio recordings. Built for football match official coaches to transcribe, review, and publish incident reports with precision.
 
 ---
 
