@@ -1,0 +1,308 @@
+/* ═══════════════════════════════════════════════════════════
+   Running Sheet Manager Styles
+   ═══════════════════════════════════════════════════════════ */
+
+.manager-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg);
+    overflow-y: auto;
+}
+
+/* ─── Setup Prompt ──────────────────────────────────────── */
+.setup-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: var(--space-lg);
+    text-align: center;
+}
+
+.setup-prompt-icon {
+    width: 80px;
+    height: 80px;
+    color: var(--accent);
+    opacity: 0.6;
+}
+
+.setup-prompt h2 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.setup-prompt p {
+    color: var(--text-secondary);
+    max-width: 450px;
+    line-height: 1.6;
+}
+
+/* ─── Page Header ───────────────────────────────────────── */
+.manager-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    flex-shrink: 0;
+}
+
+.manager-header h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+}
+
+.manager-actions {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 10px;
+    color: var(--text-tertiary);
+    pointer-events: none;
+}
+
+.search-wrapper .search-input {
+    padding-left: 32px;
+    width: 220px;
+    height: 36px;
+    font-size: var(--font-size-sm);
+}
+
+/* ─── Storage Path Display ──────────────────────────────── */
+.storage-path-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-md);
+    flex-shrink: 0;
+}
+
+.storage-path-label {
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.storage-path-value {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.storage-path-change {
+    margin-left: auto;
+}
+
+/* ─── Running Sheet List ────────────────────────────────── */
+.sheet-list-wrapper {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.sheet-list-wrapper .table-wrapper {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.sheet-table .fixture-cell {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.sheet-table .fixture-cell.empty {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.sheet-table .date-cell {
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.sheet-table .meta-cell {
+    color: var(--text-secondary);
+    font-size: var(--font-size-xs);
+}
+
+.sheet-table .officials-cell .official-line {
+    font-size: var(--font-size-xs);
+    line-height: 1.4;
+    color: var(--text-secondary);
+}
+.sheet-table .actions-cell {
+    display: flex;
+    gap: var(--space-xs);
+    justify-content: flex-end;
+}
+
+.sheet-table tbody tr {
+    cursor: pointer;
+}
+
+.sheet-table tbody tr:hover {
+    background: var(--accent-dim);
+}
+
+.sheet-table tbody tr.selected {
+    background: var(--accent-dim);
+    outline: 1px solid var(--accent-border);
+}
+
+/* ─── Metadata Form ─────────────────────────────────────── */
+.metadata-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.metadata-form .input-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.required {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+.required-note {
+    text-align: right;
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    margin-bottom: var(--space-sm);
+}
+
+/* ─── Audio Files Section ───────────────────────────────── */
+.audio-files-section {
+    margin-top: var(--space-lg);
+}
+
+.audio-files-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-md);
+}
+
+.audio-files-header h3 {
+    font-size: var(--font-size-md);
+    font-weight: 600;
+}
+
+.audio-file-list {
+    list-style: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.audio-file-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-light);
+    font-size: var(--font-size-sm);
+    transition: background var(--transition-fast);
+}
+
+.audio-file-item:last-child {
+    border-bottom: none;
+}
+
+.audio-file-item:hover {
+    background: var(--bg-hover);
+}
+
+.audio-file-item .file-index {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    color: var(--text-tertiary);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.audio-file-item .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-primary);
+}
+
+.audio-file-item .file-path {
+    flex: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-tertiary);
+    font-size: var(--font-size-xs);
+    font-family: var(--font-mono);
+}
+
+.audio-file-item .file-actions {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+.audio-file-item .file-actions .btn {
+    padding: 4px;
+    min-width: 24px;
+}
+
+.audio-file-item .file-actions .btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Drag active */
+.audio-file-item.dragging {
+    opacity: 0.5;
+    background: var(--accent-dim);
+}
+
+.audio-file-item.drag-over {
+    border-top: 2px solid var(--accent);
+}
+
+/* ─── Empty Table State ─────────────────────────────────── */
+.table-empty-state {
+    padding: var(--space-2xl);
+    text-align: center;
+}
+
+.table-empty-state p {
+    color: var(--text-tertiary);
+    font-size: var(--font-size-sm);
+}

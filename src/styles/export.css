@@ -1,0 +1,240 @@
+/* ═══════════════════════════════════════════════════════════
+   Export Module Styles
+   ═══════════════════════════════════════════════════════════ */
+
+.export-page {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.export-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-md) var(--space-lg);
+    flex-shrink: 0;
+}
+
+.export-header h2 {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+}
+
+.export-actions {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+/* ─── Format Selector ───────────────────────────────────── */
+.export-options {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: 10px var(--space-lg);
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.format-group {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.format-btn {
+    padding: 8px 20px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.format-btn:hover {
+    border-color: var(--accent-border);
+    color: var(--text-primary);
+}
+
+.format-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--accent);
+}
+
+.export-summary {
+    font-size: var(--font-size-sm);
+    color: var(--text-tertiary);
+}
+
+.export-summary strong {
+    color: var(--text-secondary);
+}
+
+/* ─── Preview ───────────────────────────────────────────── */
+.export-preview-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+}
+
+.export-preview {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.preview-page {
+    max-width: 800px;
+    min-height: 1060px;
+    background: #ffffff;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 68px;
+    color: #000;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.preview-page + .preview-page {
+    margin-top: 0;
+}
+
+.preview-page-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    color: var(--text-tertiary, #888);
+    font-size: 11px;
+    letter-spacing: 1px;
+    position: relative;
+    margin: 8px 0;
+}
+
+.preview-page-divider::before,
+.preview-page-divider::after {
+    content: '';
+    flex: 1;
+    border-top: 2px dashed var(--text-tertiary, #666);
+    margin: 0 12px;
+}
+
+/* ─── Compact Header ────────────────────────────────────── */
+.preview-header-compact {
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.preview-match-title {
+    font-size: 14pt;
+    font-weight: 700;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    margin-bottom: 4px;
+}
+
+.preview-meta-row-compact {
+    font-size: 8pt;
+    color: #555;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    margin-bottom: 4px;
+}
+
+.preview-meta-row-compact span {
+    margin: 0 8px;
+}
+
+.preview-officials {
+    font-size: 8pt;
+    color: #777;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    border-top: 1px solid #ddd;
+    padding-top: 4px;
+    margin-top: 4px;
+}
+
+/* ─── Preview Table ─────────────────────────────────────── */
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-size: 10pt;
+}
+
+.preview-table thead th {
+    background: #c0c0c0;
+    padding: 4px 8px;
+    font-weight: 700;
+    font-size: 10pt;
+    text-align: center;
+    border: 1px solid #000;
+}
+
+.preview-table tbody td {
+    padding: 2px 8px;
+    border: 1px solid #999;
+    vertical-align: top;
+    color: #000 !important;
+}
+
+/* Force all inline marks/spans to black text in preview */
+.preview-table tbody td * {
+    color: #000 !important;
+}
+
+.preview-table .col-time {
+    width: 60px;
+    text-align: center;
+}
+
+.preview-table .col-comment {
+    text-align: left;
+}
+
+/* Period Break in preview */
+.preview-break-row td {
+    text-align: center !important;
+    font-weight: 700;
+    letter-spacing: 2px;
+    background: #e0e0e0 !important;
+    color: #333;
+    padding: 4px 8px !important;
+    border: 1px solid #999;
+}
+
+.preview-empty {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    font-style: italic;
+}
+
+/* ─── Highlight dropdown styling ────────────────────────── */
+.entry-highlight-select {
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+}
+
+.entry-highlight-select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.col-highlight {
+    width: 140px;
+}
