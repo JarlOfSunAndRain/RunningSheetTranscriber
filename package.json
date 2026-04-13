@@ -1,6 +1,6 @@
 {
   "name": "runningsheet-transcriber",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Offline desktop tool for creating match incident running sheets from audio recordings",
   "main": "main.js",
   "scripts": {
@@ -10,13 +10,13 @@
     "build:linux": "electron-builder --linux"
   },
   "author": {
-    "name": "FrairOfSunAndRain",
-    "email": "FrairOfSunAndRain@users.noreply.github.com"
+    "name": "JarlOfSunAndRain",
+    "email": "JarlOfSunAndRain@users.noreply.github.com"
   },
   "license": "AGPL-3.0",
   "private": true,
   "build": {
-    "appId": "com.friarofsunandrain.runningsheet-transcriber",
+    "appId": "com.jarlofsunandrain.runningsheet-transcriber",
     "productName": "Running Sheet Transcriber",
     "directories": {
       "output": "dist"

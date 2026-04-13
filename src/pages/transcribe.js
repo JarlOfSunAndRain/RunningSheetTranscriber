@@ -132,6 +132,7 @@ const TranscribePage = (() => {
     initTextHighlightToolbar();
     highlightCurrentFileRows();
     setupAutoExpand();
+    initSpellCheckContextMenu();
 
     // Restore scroll position (or top on first render)
     const tw = document.getElementById('transcribe-table-wrapper');
@@ -244,7 +245,7 @@ const TranscribePage = (() => {
                    tabindex="0">
           </td>
           <td class="col-comment">
-            <div class="entry-comment-input" contenteditable="true"
+            <div class="entry-comment-input" contenteditable="true" spellcheck="true"
                  data-entry-id="${entry.id}"
                  data-field="comment"
                  tabindex="0">${entry.comment || ''}</div>
@@ -616,6 +617,9 @@ const TranscribePage = (() => {
     // Right-click context menu on rows
     document.querySelectorAll('.entry-table tbody tr').forEach(row => {
       row.addEventListener('contextmenu', (e) => {
+        // If clicking inside a comment field, let Electron's native
+        // context-menu handle it so spell suggestions are shown
+        if (e.target.closest('.entry-comment-input')) return;
         e.preventDefault();
         const index = parseInt(row.dataset.index);
         const entryId = row.dataset.entryId;
@@ -1148,6 +1152,24 @@ const TranscribePage = (() => {
         await Storage.saveEntries(App.getActiveSheetId(), entries);
       }
     }
+  }
+
+  /**
+   * Select the word under right-click BEFORE Chromium builds context-menu params,
+   * so params.misspelledWord and params.dictionarySuggestions are populated.
+   */
+  function initSpellCheckContextMenu() {
+    document.querySelectorAll('.entry-comment-input').forEach((el) => {
+      el.addEventListener('mousedown', (e) => {
+        if (e.button !== 2) return; // right-click only
+        const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+        if (!range) return;
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        range.expand('word');
+        sel.addRange(range);
+      });
+    });
   }
 
   return { render, flushSave };

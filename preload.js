@@ -33,6 +33,10 @@ contextBridge.exposeInMainWorld('api', {
     // App
     app: {
         getUserDataPath: () => ipcRenderer.invoke('app:getUserDataPath'),
+        getVersion: () => ipcRenderer.invoke('app:getVersion'),
+        checkForUpdates: () => ipcRenderer.invoke('app:checkForUpdates'),
+        openExternal: (url) => ipcRenderer.invoke('shell:openExternal', url),
+        setSpellCheckerLanguage: (langCode) => ipcRenderer.invoke('app:setSpellCheckerLanguage', langCode),
     },
 
     // Export

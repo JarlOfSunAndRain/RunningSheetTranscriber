@@ -22,8 +22,11 @@ const App = (() => {
         AudioPlayer.init();
         UndoRedo.init();
         await loadHotkeySettings();
+        await loadSpellCheckerLanguage();
         bindNavigation();
         await navigateTo('manager');
+        // Check for updates silently in background
+        checkForUpdates(false);
     }
 
     /**
@@ -288,11 +291,31 @@ const App = (() => {
     }
 
     /**
+     * Load saved spell checker language from settings and apply it
+     */
+    async function loadSpellCheckerLanguage() {
+        const settings = await window.api.settings.get();
+        const lang = settings?.spellCheckerLanguage || 'en-AU';
+        await window.api.app.setSpellCheckerLanguage(lang);
+    }
+
+    /**
      * Show settings modal
      */
     async function showSettings() {
         const hotkeys = AudioPlayer.getHotkeys();
         const retentionDays = await Storage.getRetentionDays();
+        const settings = await window.api.settings.get();
+        const currentLang = settings?.spellCheckerLanguage || 'en-AU';
+
+        const spellLanguages = [
+            { code: 'en-AU', label: 'English (Australia)' },
+            { code: 'en-CA', label: 'English (Canada)' },
+            { code: 'en-NZ', label: 'English (New Zealand)' },
+            { code: 'en-ZA', label: 'English (South Africa)' },
+            { code: 'en-GB', label: 'English (United Kingdom)' },
+            { code: 'en-US', label: 'English (United States)' },
+        ];
 
         const hotkeyRows = [
             { id: 'prevFile', label: 'Previous File', key: hotkeys.prevFile },
@@ -323,6 +346,18 @@ const App = (() => {
                     <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
                         <span id="settings-storage-path" style="flex:1; font-size:var(--font-size-sm); color:var(--text-secondary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${Storage.getRootDir() || 'Not set'}</span>
                         <button class="btn btn-ghost btn-sm" id="settings-change-dir" style="flex-shrink:0;">Change</button>
+                    </div>
+                </div>
+                <div style="margin-bottom:var(--space-lg);">
+                    <h3 style="font-size:var(--font-size-sm); color:var(--text-tertiary); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:var(--space-sm);">
+                        Spell Check Language
+                    </h3>
+                    <div style="display:flex; align-items:center; gap:8px; padding:8px 0;">
+                        <select id="settings-spell-language"
+                                style="flex:1; padding:6px 10px; background:var(--bg-tertiary); border:1px solid var(--border);
+                                       border-radius:var(--radius-sm); color:var(--text-primary); font-size:var(--font-size-sm);">
+                            ${spellLanguages.map(l => `<option value="${l.code}" ${l.code === currentLang ? 'selected' : ''}>${l.label}</option>`).join('')}
+                        </select>
                     </div>
                 </div>
                 <div style="margin-bottom:var(--space-lg);">
@@ -429,6 +464,16 @@ const App = (() => {
                 await Storage.setRetentionDays(val);
             }
         });
+
+        // Bind spell check language selector
+        document.getElementById('settings-spell-language')?.addEventListener('change', async (e) => {
+            const langCode = e.target.value;
+            const settings = await window.api.settings.get() || {};
+            settings.spellCheckerLanguage = langCode;
+            await window.api.settings.set(settings);
+            await window.api.app.setSpellCheckerLanguage(langCode);
+            showToast(`Spell check language set to ${e.target.options[e.target.selectedIndex].text}`, 'success');
+        });
     }
 
     /**
@@ -441,9 +486,39 @@ const App = (() => {
     }
 
     /**
+     * Check GitHub for a newer version
+     * @param {boolean} manual - if true, always show a result dialog; if false, only show if update found
+     */
+    async function checkForUpdates(manual = true) {
+        const result = await window.api.app.checkForUpdates();
+
+        if (result.error) {
+            if (manual) showToast('Could not check for updates — check your internet connection', 'error');
+            return;
+        }
+
+        if (result.hasUpdate) {
+            Modal.confirm({
+                title: 'Update Available',
+                message: `
+                    <div style="text-align:center">
+                        <p style="margin-bottom:12px">Version <strong>${result.latestVersion}</strong> is available.</p>
+                        <p style="font-size:var(--font-size-sm); color:var(--text-secondary)">You are running <strong>${result.currentVersion}</strong>.</p>
+                    </div>`,
+                confirmLabel: 'Download Now',
+                confirmClass: 'btn-primary',
+                onConfirm: () => window.api.app.openExternal(result.downloadUrl),
+            });
+        } else if (manual) {
+            showToast(`You're up to date — v${result.currentVersion}`, 'success');
+        }
+    }
+
+    /**
      * Show About dialog
      */
-    function showAbout() {
+    async function showAbout() {
+        const version = await window.api.app.getVersion();
         Modal.show({
             title: 'About',
             body: `
@@ -454,17 +529,27 @@ const App = (() => {
                         Running Sheet Transcriber
                     </h2>
                     <p style="font-size:var(--font-size-sm); color:var(--text-secondary); margin-bottom:var(--space-md);">
-                        Version 1.0.0
+                        Version ${version}
                     </p>
                     <p style="font-size:var(--font-size-sm); color:var(--text-secondary); line-height:1.6;">
                         An offline desktop tool for creating match incident<br>running sheets from audio recordings.
                     </p>
+                    <div style="margin-top:var(--space-md);">
+                        <button id="btn-check-updates" class="btn btn-secondary btn-sm">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px;vertical-align:middle">
+                                <polyline points="23 4 23 10 17 10"/>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                            </svg>
+                            Check for Updates
+                        </button>
+                    </div>
                     <div style="margin-top:var(--space-lg); padding-top:var(--space-md); border-top:1px solid var(--border);">
                         <p style="font-size:var(--font-size-sm); color:var(--text-tertiary);">
-                            Published by <span style="color:var(--accent); font-weight:600;">FrairOfSunAndRain</span>
+                            Published by <span style="color:var(--accent); font-weight:600;">JarlOfSunAndRain</span>
                         </p>
                         <p style="font-size:var(--font-size-xs); color:var(--text-tertiary); margin-top:6px;">
-                            Licensed under AGPL-3.0
+                            Licensed under AGPL-3.0 &nbsp;·&nbsp;
+                            <a href="#" id="about-github-link" style="color:var(--accent); text-decoration:none;">GitHub</a>
                         </p>
                     </div>
                 </div>
@@ -474,6 +559,15 @@ const App = (() => {
                 { label: 'Close', class: 'btn-primary', onClick: () => Modal.hide() },
             ],
         });
+
+        // Bind buttons after modal renders
+        setTimeout(() => {
+            document.getElementById('btn-check-updates')?.addEventListener('click', () => checkForUpdates(true));
+            document.getElementById('about-github-link')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.api.app.openExternal('https://github.com/JarlOfSunAndRain/RunningSheetTranscriber');
+            });
+        }, 50);
     }
 
     return {
@@ -488,6 +582,7 @@ const App = (() => {
         showSettings,
         showEditDetails,
         showAbout,
+        checkForUpdates,
     };
 })();
 

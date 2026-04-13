@@ -155,6 +155,7 @@ const ReviewPage = (() => {
     bindReviewEvents();
     initHighlightDropdowns();
     autoExpandAll();
+    initSpellCheckContextMenu();
 
     const rw = document.getElementById('review-table-wrapper');
     if (rw) rw.scrollTop = 0;
@@ -239,7 +240,7 @@ const ReviewPage = (() => {
                    tabindex="0">
           </td>
           <td class="col-comment">
-            <div class="entry-comment-input" contenteditable="true"
+            <div class="entry-comment-input" contenteditable="true" spellcheck="true"
                  data-entry-id="${entry.id}"
                  data-field="comment"
                  tabindex="0">${entry.comment || ''}</div>
@@ -480,6 +481,23 @@ const ReviewPage = (() => {
         await Storage.saveEntries(App.getActiveSheetId(), entries);
       }
     }
+  }
+
+  /**
+   * Select word under right-click BEFORE Chromium builds context-menu params.
+   */
+  function initSpellCheckContextMenu() {
+    document.querySelectorAll('.entry-comment-input').forEach((el) => {
+      el.addEventListener('mousedown', (e) => {
+        if (e.button !== 2) return; // right-click only
+        const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+        if (!range) return;
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        range.expand('word');
+        sel.addRange(range);
+      });
+    });
   }
 
   return { render, flushSave };

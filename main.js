@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, globalShortcut, protocol, net, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, globalShortcut, protocol, net, Menu, MenuItem, shell, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { execFile } = require('child_process');
@@ -41,6 +41,7 @@ function createWindow() {
             contextIsolation: true,
             nodeIntegration: false,
             webSecurity: false,
+            spellcheck: true,
         },
         show: false,
         autoHideMenuBar: true,
@@ -53,6 +54,34 @@ function createWindow() {
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
         mainWindow.maximize();
+    });
+
+    // Right-click context menu with spell-check suggestions
+    mainWindow.webContents.on('context-menu', (event, params) => {
+        const menu = new Menu();
+
+        if (params.misspelledWord) {
+            params.dictionarySuggestions.slice(0, 3).forEach(suggestion => {
+                menu.append(new MenuItem({
+                    label: suggestion,
+                    click: () => mainWindow.webContents.replaceMisspelling(suggestion),
+                }));
+            });
+            if (params.dictionarySuggestions.length > 0) {
+                menu.append(new MenuItem({ type: 'separator' }));
+            }
+            menu.append(new MenuItem({
+                label: 'Add to Dictionary',
+                click: () => mainWindow.webContents.session.addWordToSpellCheckerDictionary(params.misspelledWord),
+            }));
+            menu.append(new MenuItem({ type: 'separator' }));
+        }
+
+        if (params.editFlags.canCut)   menu.append(new MenuItem({ role: 'cut' }));
+        if (params.editFlags.canCopy)  menu.append(new MenuItem({ role: 'copy' }));
+        if (params.editFlags.canPaste) menu.append(new MenuItem({ role: 'paste' }));
+
+        if (menu.items.length > 0) menu.popup();
     });
 
     mainWindow.on('closed', () => {
@@ -93,6 +122,9 @@ app.whenReady().then(() => {
         }
     });
 
+    // Set spell checker languages before window opens so dictionaries are ready
+    session.defaultSession.setSpellCheckerLanguages(['en-AU', 'en-GB', 'en-US']);
+
     createWindow();
 
     app.on('activate', () => {
@@ -118,6 +150,38 @@ ipcMain.handle('settings:get', () => {
 ipcMain.handle('settings:set', (event, settings) => {
     saveSettings(settings);
     return true;
+});
+
+// App: get current version
+ipcMain.handle('app:getVersion', () => app.getVersion());
+
+// App: set spell checker language
+ipcMain.handle('app:setSpellCheckerLanguage', (event, langCode) => {
+    session.defaultSession.setSpellCheckerLanguages([langCode]);
+    return true;
+});
+
+// App: check GitHub for latest release
+ipcMain.handle('app:checkForUpdates', async () => {
+    try {
+        const response = await net.fetch(
+            'https://api.github.com/repos/JarlOfSunAndRain/RunningSheetTranscriber/releases/latest',
+            { headers: { 'User-Agent': 'RunningSheetTranscriber-UpdateChecker' } }
+        );
+        if (!response.ok) return { error: `HTTP ${response.status}` };
+        const data = await response.json();
+        const latestVersion = (data.tag_name || '').replace(/^v/, '');
+        const currentVersion = app.getVersion();
+        const hasUpdate = latestVersion && latestVersion !== currentVersion;
+        return { currentVersion, latestVersion, hasUpdate, downloadUrl: data.html_url };
+    } catch (e) {
+        return { error: e.message };
+    }
+});
+
+// Shell: open URL in default browser
+ipcMain.handle('shell:openExternal', (event, url) => {
+    shell.openExternal(url);
 });
 
 // Dialog: select storage directory

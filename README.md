@@ -46,7 +46,7 @@ sudo dpkg -i running-sheet-transcriber_x.x.x_amd64.deb
 
 ### Setup
 ```bash
-git clone https://github.com/FrairOfSunAndRain/RunningSheetTranscriber.git
+git clone https://github.com/JarlOfSunAndRain/RunningSheetTranscriber.git
 cd RunningSheetTranscriber
 npm install
 ```
@@ -95,7 +95,7 @@ Open **Settings** (gear icon) to configure:
 
 ## License
 
-Copyright © 2026 FrairOfSunAndRain
+Copyright © 2026 JarlOfSunAndRain
 
 This program is free software: you can redistribute it and/or modify it under the terms of the **GNU Affero General Public License** as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
