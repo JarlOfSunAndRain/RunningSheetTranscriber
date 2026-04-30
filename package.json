@@ -18,6 +18,7 @@
   "build": {
     "appId": "com.jarlofsunandrain.runningsheet-transcriber",
     "productName": "Running Sheet Transcriber",
+    "copyright": " ",
     "directories": {
       "output": "dist"
     },
