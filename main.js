@@ -172,7 +172,13 @@ ipcMain.handle('app:checkForUpdates', async () => {
         const data = await response.json();
         const latestVersion = (data.tag_name || '').replace(/^v/, '');
         const currentVersion = app.getVersion();
-        const hasUpdate = latestVersion && latestVersion !== currentVersion;
+        // Compare semver: only flag an update if GitHub version is strictly newer
+        const parseVer = v => v.split('.').map(Number);
+        const [lMaj, lMin, lPat] = parseVer(latestVersion);
+        const [cMaj, cMin, cPat] = parseVer(currentVersion);
+        const hasUpdate = latestVersion && (
+            lMaj > cMaj || (lMaj === cMaj && lMin > cMin) || (lMaj === cMaj && lMin === cMin && lPat > cPat)
+        );
         return { currentVersion, latestVersion, hasUpdate, downloadUrl: data.html_url };
     } catch (e) {
         return { error: e.message };

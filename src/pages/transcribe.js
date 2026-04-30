@@ -426,7 +426,7 @@ const TranscribePage = (() => {
         // Update entry data
         const entry = entries.find(e => e.id === commentDiv.dataset.entryId);
         if (entry) {
-          entry.comment = commentDiv.innerHTML;
+          entry.comment = commentDiv.innerText.trim() === '' ? '' : commentDiv.innerHTML;
           scheduleAutosave();
           UndoRedo.commit(entries, highlightDesc);
         }
@@ -530,7 +530,9 @@ const TranscribePage = (() => {
       div.addEventListener('input', () => {
         const entry = entries.find(e => e.id === div.dataset.entryId);
         if (entry) {
-          entry.comment = div.innerHTML;
+          const isEmpty = div.innerText.trim() === '';
+          if (isEmpty) div.innerHTML = '';
+          entry.comment = isEmpty ? '' : div.innerHTML;
           scheduleAutosave();
         }
       });
@@ -1121,13 +1123,23 @@ const TranscribePage = (() => {
       ],
     });
 
-    // Bind Clear All Links button
+    // Bind Clear All Links button and scroll to first checked item
     setTimeout(() => {
       document.getElementById('btn-clear-links')?.addEventListener('click', () => {
         document.querySelectorAll('.link-files-list input[type="checkbox"]').forEach(cb => {
           cb.checked = false;
         });
       });
+
+      // Scroll the list so the first already-checked file sits at the top,
+      // revealing the following files below it for context
+      const linkList = document.querySelector('.link-files-list');
+      const firstChecked = linkList?.querySelector('input[type="checkbox"]:checked');
+      if (linkList && firstChecked) {
+        const li = firstChecked.closest('li');
+        const liTop = li.getBoundingClientRect().top - linkList.getBoundingClientRect().top;
+        linkList.scrollTop += liTop;
+      }
     }, 50);
   }
 

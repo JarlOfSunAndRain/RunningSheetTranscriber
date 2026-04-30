@@ -286,6 +286,22 @@ const ReviewPage = (() => {
         if (entry) {
           entry.highlight = select.value || '';
           applyHighlightColor(select);
+
+          // Auto-include excluded entries when assigned a highlight type
+          if ((entry.highlight === 'incident' || entry.highlight === 'key') && !entry.included) {
+            entry.included = true;
+            const typeName = entry.highlight === 'incident' ? 'Incident of Interest' : 'Key Match Incident';
+            scheduleAutosave();
+            applyFilters();
+            refreshTable();
+            Modal.show({
+              title: 'Entry Included',
+              body: `<p style="color: var(--text-secondary);">You have changed an excluded line to be a <strong><em>${typeName}</em></strong>. It will now be included in the running sheet.</p>`,
+              buttons: [{ label: 'OK', class: 'btn-primary', onClick: () => Modal.hide() }],
+            });
+            return;
+          }
+
           scheduleAutosave();
         }
       });
@@ -383,12 +399,23 @@ const ReviewPage = (() => {
     document.querySelectorAll('.review-include-cb').forEach(cb => {
       cb.addEventListener('change', () => {
         const entry = entries.find(e => e.id === cb.dataset.entryId);
-        if (entry) {
-          entry.included = cb.checked;
-          scheduleAutosave();
-          applyFilters();
-          refreshTable();
+        if (!entry) return;
+
+        // Highlighted entries cannot be excluded
+        if (!cb.checked && (entry.highlight === 'incident' || entry.highlight === 'key')) {
+          cb.checked = true; // revert the checkbox
+          Modal.show({
+            title: 'Cannot Exclude Entry',
+            body: '<p style="color: var(--text-secondary);">Unable to exclude <strong><em>Incidents of Interest</em></strong> or <strong><em>Key Match Incidents</em></strong>.</p>',
+            buttons: [{ label: 'OK', class: 'btn-primary', onClick: () => Modal.hide() }],
+          });
+          return;
         }
+
+        entry.included = cb.checked;
+        scheduleAutosave();
+        applyFilters();
+        refreshTable();
       });
     });
 
